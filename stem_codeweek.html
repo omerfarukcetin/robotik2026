@@ -1,0 +1,632 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>STEM'i Boya: Kodu Çöz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: sticky header + 7-step stepper; each step is a "worksheet" panel on a light paper surface. */
+:root{
+  --bg:#e9f0f9; --surface:#ffffff; --ink:#17223b; --muted:#56637f; --line:#c6d2e5;
+  --accent:#ffb81c; --accent-soft:#fff1cc; --focus:#2f6fe0;
+  --paper:#ffffff; --paper-ink:#17223b; --paper-line:#9fb0cc;
+  --ok:#17914d; --ok-soft:#dcf5e6; --bad:#d23434; --bad-soft:#fde2e2;
+  --c-S:#1d1f24; --c-T:#2f6fe0; --c-E:#23a35a; --c-M:#e23d3d;
+  --display:"Baloo 2","Arial Rounded MT Bold","Trebuchet MS",sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1525; --surface:#162036; --ink:#e7edf9; --muted:#9dabc6; --line:#2a3a59;
+  --accent:#ffc53d; --accent-soft:#3a3016; --focus:#7aa7ff;
+  --paper:#f2f5fa; --paper-ink:#17223b; --paper-line:#9fb0cc;
+  --ok:#3fcf7f; --ok-soft:#163a28; --bad:#ff6b6b; --bad-soft:#3d1c1f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1525; --surface:#162036; --ink:#e7edf9; --muted:#9dabc6; --line:#2a3a59;
+  --accent:#ffc53d; --accent-soft:#3a3016; --focus:#7aa7ff;
+  --paper:#f2f5fa; --paper-ink:#17223b; --paper-line:#9fb0cc;
+  --ok:#3fcf7f; --ok-soft:#163a28; --bad:#ff6b6b; --bad-soft:#3d1c1f; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:22px 22px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:2px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+.logo{display:flex;gap:2px;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.5px}
+.logo span{display:inline-grid;place-items:center;width:36px;height:40px;border-radius:8px;color:#fff;transform:rotate(-4deg)}
+.logo span:nth-child(2){transform:rotate(3deg)} .logo span:nth-child(4){transform:rotate(5deg)}
+.logo b{margin-left:8px;font-weight:800}
+.spacer{flex:1}
+.seg{display:flex;border:2px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:6px 12px;font-weight:800;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#17223b}
+.chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:5px 12px;font-weight:800;background:var(--surface);font-size:14px}
+.chip.star{border-color:var(--accent);background:var(--accent-soft)}
+.icon-btn{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-weight:800;font-size:14px}
+
+nav.steps{display:flex;gap:6px;overflow-x:auto;padding-block:0 10px;scrollbar-width:thin}
+nav.steps button{flex:0 0 auto;display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:6px 12px 6px 6px;font-weight:700;font-size:14px;white-space:nowrap}
+nav.steps .n{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--surface);border:2px solid var(--line);font-family:var(--display);font-weight:800}
+nav.steps button[aria-current="step"]{border-color:var(--ink);background:var(--surface)}
+nav.steps button[aria-current="step"] .n{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+nav.steps button.done .n{background:var(--accent);border-color:var(--accent);color:#17223b}
+nav.steps small{color:var(--muted);font-weight:700}
+
+main{padding-block:22px 60px}
+.sheet{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:clamp(16px,3vw,32px);display:grid;gap:22px}
+.shead{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.shead > div{flex:1;min-width:0}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.shead h2{font-size:clamp(28px,4.4vw,42px);margin-top:2px}
+.lead{color:var(--muted);max-width:62ch;margin:6px 0 0;font-size:17px}
+.timer{display:flex;align-items:center;gap:8px}
+.timer .t{font-family:var(--display);font-weight:800;font-size:26px;font-variant-numeric:tabular-nums;min-width:70px;text-align:right}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--surface);border-radius:12px;padding:10px 18px;font-weight:800;font-size:16px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.yellow{background:var(--accent);border-color:var(--accent);color:#17223b}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:2px dashed var(--line);padding-top:18px}
+.msg{min-height:28px;font-weight:800;font-size:17px}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+.say{border:0;background:var(--accent-soft);border-radius:999px;padding:2px 10px;font-weight:800;font-size:13px}
+
+/* Step 1 */
+.flip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card{perspective:900px;border:0;background:none;padding:0;aspect-ratio:3/4;max-width:100%}
+.card .in{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.card.open .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;display:grid;place-items:center;padding:12px;text-align:center}
+.front{background:var(--paper);border:3px dashed var(--paper-line);color:var(--paper-ink);font-family:var(--display);font-weight:800;font-size:clamp(60px,12vw,120px)}
+.front small{position:absolute;bottom:10px;font-family:var(--body);font-size:13px;color:#56637f;font-weight:700}
+.back{transform:rotateY(180deg);color:#fff;align-content:center;gap:4px}
+.back .L{font-family:var(--display);font-size:44px;font-weight:800;line-height:1}
+.back .en{font-weight:800;opacity:.85;font-size:14px;letter-spacing:.04em}
+.back .tr{font-family:var(--display);font-weight:800;font-size:clamp(18px,2.6vw,26px);line-height:1.1}
+.back p{margin:4px 0 0;font-size:14px;line-height:1.3}
+.back .em{font-size:24px;letter-spacing:4px}
+.bigq{font-family:var(--display);font-size:clamp(22px,3vw,30px);font-weight:700;background:var(--accent-soft);border-radius:14px;padding:12px 18px}
+
+/* Step 2 */
+.pool{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:10px;border:2px dashed var(--line);border-radius:16px;min-height:84px}
+.pool .done{grid-column:1/-1;align-self:center;text-align:center;font-weight:800;color:var(--ok)}
+.item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:6px 2px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--paper-ink);min-width:0}
+.item .e{font-size:32px;line-height:1.15}
+.item .nm{font-size:11.5px;font-weight:800;line-height:1.15;text-align:center}
+.item .job{font-size:10.5px;font-weight:700;color:#2f6fe0;text-align:center;line-height:1.1}
+#pool .item{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.item[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent);transform:translateY(-3px)}
+.item.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.baskets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.basket{border:3px solid var(--bc);border-radius:16px;background:var(--paper);color:var(--paper-ink);padding:8px;display:grid;gap:6px;align-content:start;min-height:150px;cursor:pointer;transition:background .2s,transform .2s}
+.basket.hot{background:var(--accent-soft);transform:scale(1.03)}
+.basket.no{background:var(--bad-soft)}
+.basket.hint{animation:pulse 1s ease-in-out 3}
+@keyframes pulse{50%{box-shadow:0 0 0 8px var(--accent)}}
+.basket .top{display:flex;align-items:center;gap:8px;min-width:0}
+.basket .lt{flex:0 0 auto;font-family:var(--display);font-weight:800;font-size:32px;line-height:1;color:#fff;background:var(--bc);width:40px;height:42px;display:grid;place-items:center;border-radius:10px}
+.basket .area{font-weight:800;font-size:15px;line-height:1.15;min-width:0}
+.basket .cnt{margin-left:auto;font-size:12px;font-weight:800;color:#56637f}
+.basket .got{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;border-radius:10px;background:color-mix(in srgb,var(--bc) 8%,#fff);padding:4px;min-height:64px;align-content:start}
+.basket .got .item{padding:3px 1px;border-width:1.5px;animation:pop .35s}
+.basket .got .item .e{font-size:24px}
+.basket .got .item .nm{font-size:10px}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.s2bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.s2bar .msg{flex:1;min-width:200px;min-height:0}
+
+/* Step 3 */
+.legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.lg{border:2px solid var(--line);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;background:var(--paper);color:var(--paper-ink)}
+.lg .sym{font-size:40px;line-height:1;width:48px;text-align:center}
+.lg .sw{width:34px;height:34px;border-radius:50%;border:2px solid #17223b}
+.lg .cn{font-family:var(--display);font-weight:800;font-size:20px}
+.lg select{font:inherit;font-weight:800;border:2px solid var(--paper-line);border-radius:10px;padding:4px 6px;background:#fff;color:#17223b;max-width:100%}
+.robot-say{display:flex;gap:12px;align-items:center;background:var(--accent-soft);border-radius:16px;padding:12px 16px;font-weight:700}
+.robot-say .r{font-size:40px}
+.quiz{display:grid;gap:12px;border:2px solid var(--line);border-radius:16px;padding:16px}
+.quiz .q{font-family:var(--display);font-size:26px;font-weight:700;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.quiz .q .sym{font-size:46px;width:60px;height:60px;display:grid;place-items:center;border-radius:14px;background:var(--paper);color:var(--paper-ink);border:2px solid var(--line)}
+.opts{display:flex;gap:10px;flex-wrap:wrap}
+.opt{display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 14px;font-weight:800}
+.opt i{width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);display:inline-block}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.dots{display:flex;gap:6px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--ok)}
+
+/* Step 4 paper */
+.paper{background:var(--paper);color:var(--paper-ink);border-radius:18px;padding:clamp(10px,2vw,18px);border:2px solid var(--paper-line);display:grid;gap:12px}
+.ptitle{text-align:center;font-family:var(--display);font-size:clamp(30px,5vw,46px);font-weight:800;-webkit-text-stroke:1.5px #17223b;color:#fff;letter-spacing:1px;paint-order:stroke fill}
+.panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.panel{border:2.5px dashed #6e7f9e;border-radius:16px;padding:10px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center}
+.panel svg.letter{width:100%;max-width:220px;height:auto;justify-self:center;cursor:pointer;overflow:visible}
+.panel svg.letter:hover .outl{stroke:#2f6fe0}
+.panel .icons{display:grid;gap:8px}
+.ic{width:60px;height:60px;border-radius:14px;border:2.5px solid #17223b;display:grid;place-items:center;font-size:30px;background:#fff;padding:0;transition:background .25s}
+.panel .lbl{grid-column:1/-1;font-family:var(--display);font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel .lbl small{font-family:var(--body);font-size:12px;color:#56637f;font-weight:700}
+.codebar{border:2.5px solid #17223b;border-radius:14px;padding:8px 14px;display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;font-weight:800}
+.codebar b{font-family:var(--display);font-size:18px}
+.codebar .ce{display:inline-flex;gap:6px;align-items:center}
+.codebar .ce span{font-size:22px}
+.palette{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:10px 12px;box-shadow:0 8px 24px rgb(0 0 0 / .12)}
+.pc{width:42px;height:42px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 2px var(--line);padding:0;position:relative}
+.pc[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink);transform:scale(1.12)}
+.pc.eraser{background:repeating-linear-gradient(45deg,#fff 0 6px,#dde3ee 6px 12px)}
+.palette .cur{font-weight:800;margin-left:auto;font-size:14px}
+.progress{height:10px;border-radius:99px;background:var(--line);overflow:hidden;flex:1;min-width:120px}
+.progress i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+
+/* Step 5 */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.box{border:2px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px;align-content:start}
+.box h3{font-size:24px}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.mini button,.mini div{background:var(--paper);border:2.5px solid var(--paper-line);border-radius:14px;padding:6px;display:grid;justify-items:center;gap:2px;color:var(--paper-ink);font-weight:800;font-size:13px}
+.mini svg{width:100%;max-width:90px;height:auto}
+.mini .good{border-color:var(--ok)} .mini .badl{border-color:var(--bad);animation:shake .4s}
+.mini .found{border-color:var(--ok);background:var(--ok-soft)}
+.report{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.report li{padding:8px 12px;border-radius:10px;font-weight:700}
+.report li.ok{background:var(--ok-soft)} .report li.bad{background:var(--bad-soft)}
+
+/* Step 6 */
+.draw{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:16px}
+.cvwrap{background:var(--paper);border:2.5px solid #17223b;border-radius:16px;overflow:hidden;position:relative}
+.cvwrap .cap{position:absolute;left:12px;top:8px;font-family:var(--display);font-weight:800;color:#17223b;font-size:clamp(14px,2.2vw,20px);pointer-events:none}
+canvas#cv{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.tools{display:grid;gap:12px;align-content:start}
+.tools h4{margin:0;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tgrid{display:flex;flex-wrap:wrap;gap:6px}
+.tb{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 10px;font-weight:800;font-size:14px}
+.tb[aria-pressed="true"]{border-color:var(--ink);background:var(--accent-soft)}
+.stamp{font-size:24px;padding:2px 6px}
+.pc.sm{width:30px;height:30px}
+input[type=text]{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--ink);width:100%}
+.areas{display:flex;gap:6px;flex-wrap:wrap}
+.areas label{display:flex;gap:6px;align-items:center;border:2px solid var(--line);border-radius:10px;padding:4px 10px;font-weight:800;cursor:pointer}
+.areas input{accent-color:var(--focus)}
+
+/* Step 7 */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:10px;align-items:center;font-weight:800;font-size:14px;opacity:.5}
+.badge.on{opacity:1;border-color:var(--accent);background:var(--accent-soft)}
+.badge .st{font-size:26px;filter:grayscale(1)} .badge.on .st{filter:none}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.pin{background:var(--paper);color:var(--paper-ink);border-radius:6px;padding:10px 10px 12px;box-shadow:0 6px 16px rgb(0 0 0 / .15);transform:rotate(var(--r));position:relative;display:grid;gap:6px}
+.pin::before{content:"";position:absolute;top:-8px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--c-M);box-shadow:inset -3px -3px 0 rgb(0 0 0 / .2)}
+.pin img{border:1.5px solid #c6d2e5;border-radius:4px}
+.pin b{font-family:var(--display);font-size:18px;line-height:1.1}
+.pin small{color:#56637f;font-weight:700}
+.pin .x{position:absolute;right:6px;top:6px;border:0;background:#fff;border-radius:50%;width:26px;height:26px;font-weight:800;color:#d23434}
+.empty{border:2px dashed var(--line);border-radius:16px;padding:22px;text-align:center;color:var(--muted);font-weight:700}
+
+/* Teacher overlay */
+.ov{position:fixed;inset:0;z-index:20;background:rgb(10 16 30 / .55);display:grid;place-items:center;padding:16px}
+.ov .dlg{background:var(--surface);color:var(--ink);border-radius:20px;max-width:720px;width:100%;max-height:88vh;overflow:auto;padding:24px;display:grid;gap:14px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border:1.5px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft)}
+.tbl{overflow-x:auto}
+.dlg ol,.dlg ul{margin:0;padding-left:22px;display:grid;gap:4px}
+
+#fx{position:fixed;inset:0;pointer-events:none;z-index:30}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;z-index:31;background:var(--ink);color:var(--surface);padding:12px 20px;border-radius:999px;font-weight:800;transition:.3s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:820px){
+  .flip,.baskets,.legend{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pool{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .two,.draw{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){
+  .panels{grid-template-columns:minmax(0,1fr)}
+  .logo b{display:none}
+  .hrow .chip.lvl{display:none}
+  .mini{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <div class="logo" aria-label="STEM'i Boya"><span style="background:var(--c-S)">S</span><span style="background:var(--c-T)">T</span><span style="background:var(--c-E)">E</span><span style="background:var(--c-M)">M</span><b>'i Boya!</b></div>
+      <div class="spacer"></div>
+      <span class="chip lvl">Sınıf</span>
+      <div class="seg" role="group" aria-label="Sınıf düzeyi">
+        <button id="lv1" data-lv="1">1.</button><button id="lv2" data-lv="2">2.</button><button id="lv3" data-lv="3">3–4.</button>
+      </div>
+      <span class="chip star" title="Kazanılan yıldızlar">★ <span id="starN">0</span>/6</span>
+      <button class="icon-btn" id="soundBtn" aria-pressed="true">Ses: açık</button>
+      <button class="icon-btn" id="teachBtn">Öğretmen</button>
+    </div>
+    <nav class="steps" id="stepsNav" aria-label="Etkinlik adımları"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<div class="ov" id="teach" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="tt">
+    <div class="row"><h2 id="tt" style="font-size:30px;flex:1">Öğretmen notları</h2><button class="btn ghost" id="teachClose">Kapat</button></div>
+    <p style="margin:0"><b>Etkinlik 1 – STEM'i Boya: Kodu Çöz.</b> Süre 40 dk · Bireysel çalışma · Bilgisayarsız sürümü de var (çalışma kâğıdı) · İlkokul.</p>
+    <div class="tbl"><table>
+      <tr><th>Ders</th><th>Öğrenme çıktısı</th></tr>
+      <tr><td><b>Görsel Sanatlar</b></td><td>Görsel sanat çalışmalarında renk, çizgi ve şekil öğelerini kullanabilme</td></tr>
+      <tr><td><b>Matematik</b></td><td>Geometrik şekilleri tanıyıp adlandırabilme</td></tr>
+      <tr><td><b>Hayat Bilgisi</b></td><td>Teknolojik ürünlerin günlük yaşamdaki yerini fark edebilme</td></tr>
+    </table></div>
+    <div><b>Kodlama bağlantısı:</b> sembolleri çözme (★ = siyah gibi), bir kurala göre adım adım çalışma, yanlış boyanan alanı bularak hata ayıklama.</div>
+    <div><b>Zaman planı</b><ol>
+      <li>Giriş – 5 dk</li><li>Resimlerden tahmin et – 8 dk</li><li>Kodu tanıt – 2 dk</li><li>Kodu çöz ve boya – 15 dk</li><li>Kontrol et – 3 dk</li><li>Kendi keşfin – 7 dk</li></ol></div>
+    <div><b>Uyarlama (üstteki "Sınıf" düğmeleri)</b><ul>
+      <li><b>1. sınıf:</b> alan adları gizlenir, sesli okunur; öğrenci resimleri harflerle eşleştirir.</li>
+      <li><b>3–4. sınıf:</b> her resmin altında onu kullanan meslek çıkar; öğrenciler 3. adımda kendi renk kodunu kurar ve bulmacayı karıştırıp arkadaşına çözdürebilir.</li></ul></div>
+    <div><b>Fotoğraf önerisi:</b> boyanmış sayfaları ve keşif çizimlerini sınıf panosunda sergileyin. Uygulamadaki "Sınıf panosu" çizimleri bu bilgisayarda saklar.</div>
+  </div>
+</div>
+
+<canvas id="fx"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+
+/* ---------- Data ---------- */
+const COLORS={siyah:{n:"Siyah",h:"#1d1f24"},mavi:{n:"Mavi",h:"#2f6fe0"},yesil:{n:"Yeşil",h:"#23a35a"},kirmizi:{n:"Kırmızı",h:"#e23d3d"},
+  sari:{n:"Sarı",h:"#f7c62f"},turuncu:{n:"Turuncu",h:"#f28b2c"},mor:{n:"Mor",h:"#8b5cf6"},pembe:{n:"Pembe",h:"#f472b6"},kahve:{n:"Kahverengi",h:"#8d5a3b"},acik:{n:"Açık mavi",h:"#7cc6f2"}};
+const SYM={star:"★",circle:"●",tri:"▲",sq:"■"};
+const SYMNAME={star:"yıldız",circle:"daire",tri:"üçgen",sq:"kare"};
+const AREAS={
+  S:{en:"Science",tr:"Bilim (Fen)",d:"Doğayı merak eder, gözlem ve deney yaparız.",c:"var(--c-S)",bg:"#1d1f24"},
+  T:{en:"Technology",tr:"Teknoloji",d:"İşimizi kolaylaştıran araçlar ve cihazlar.",c:"var(--c-T)",bg:"#2f6fe0"},
+  E:{en:"Engineering",tr:"Mühendislik",d:"Tasarlar, inşa eder, sorunları çözeriz.",c:"var(--c-E)",bg:"#1d8a4b"},
+  M:{en:"Mathematics",tr:"Matematik",d:"Sayar, ölçer, şekilleri tanırız.",c:"var(--c-M)",bg:"#d23434"}};
+const ITEMS=[
+  {id:"buyutec",e:"🔍",n:"Büyüteç",a:"S",job:"Bilim insanı"},{id:"sise",e:"🧪",n:"Deney şişesi",a:"S",job:"Kimyager"},{id:"bitki",e:"🌱",n:"Bitki",a:"S",job:"Biyolog"},
+  {id:"bilg",e:"💻",n:"Bilgisayar",a:"T",job:"Yazılımcı"},{id:"robot",e:"🤖",n:"Robot",a:"T",job:"Robotik uzmanı"},{id:"tablet",e:"📱",n:"Tablet",a:"T",job:"Teknisyen"},
+  {id:"disli",e:"⚙️",n:"Dişli",a:"E",job:"Makine mühendisi"},{id:"kopru",e:"🌉",n:"Köprü",a:"E",job:"İnşaat mühendisi"},{id:"baret",e:"⛑️",n:"Baret",a:"E",job:"Mühendis"},
+  {id:"cetvel",e:"📏",n:"Cetvel",a:"M",job:"Mimar"},{id:"sekil",e:"🔷",n:"Geometrik şekiller",a:"M",job:"Matematikçi"},{id:"abakus",e:"🧮",n:"Abaküs",a:"M",job:"Matematik öğretmeni"}];
+const LETTERS=["S","T","E","M"];
+/* Letter centerline paths (viewBox 0 0 200 220) and badge positions */
+const SHAPE={
+  S:{d:"M152 58 C138 24 52 24 54 70 C56 114 148 102 148 150 C148 196 62 202 46 166",b:[[100,34],[104,188]]},
+  T:{d:"M38 42 H162 M100 42 V192",b:[[100,140]]},
+  E:{d:"M152 38 H58 V188 H152 M58 113 H134",b:[[58,150]]},
+  M:{d:"M40 192 V40 L100 128 L160 40 V192",b:[[40,160],[160,160]]}};
+const STEPS=[
+  {id:"giris",t:"Giriş",min:5},{id:"tahmin",t:"Resimlerden tahmin et",min:8},{id:"kod",t:"Kodu tanı",min:2},
+  {id:"boya",t:"Kodu çöz ve boya",min:15},{id:"kontrol",t:"Kontrol et",min:3},{id:"icat",t:"Kendi keşfin",min:7},{id:"pano",t:"Sınıf panosu",min:0}];
+
+/* ---------- State ---------- */
+const DEFAULT_CODE={star:"siyah",circle:"mavi",tri:"yesil",sq:"kirmizi"};
+const st={
+  level:LS.get("stem.level",2), step:0, stars:new Set(), sound:true,
+  code:{...DEFAULT_CODE}, letterSym:{S:"star",T:"circle",E:"tri",M:"sq"},
+  fills:{S:null,T:null,E:null,M:null}, iconFills:{}, brush:"siyah",
+  flipped:new Set(), placed:{}, sel:null, quiz:null, robi:null
+};
+
+/* ---------- Utils ---------- */
+let actx=null;
+function beep(type){ if(!st.sound) return; try{
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const seq={ok:[660,880],bad:[220,180],pop:[520],star:[523,659,784,1046]}[type]||[440];
+  seq.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type==="bad"?"square":"triangle";o.frequency.value=f;
+    const t=actx.currentTime+i*0.09;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.18,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.16);
+    o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.18);});
+}catch(e){} }
+function speak(text){ if(!st.sound) return; try{const u=new SpeechSynthesisUtterance(text);u.lang="tr-TR";u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){} }
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2200);}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* confetti */
+const fx=$("#fx"),fctx=fx.getContext("2d");let parts=[],raf=0;
+function confetti(){ if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  fx.width=innerWidth;fx.height=innerHeight;const cols=["#1d1f24","#2f6fe0","#23a35a","#e23d3d","#ffb81c"];
+  for(let i=0;i<140;i++)parts.push({x:innerWidth/2,y:innerHeight*0.35,vx:(Math.random()-.5)*14,vy:Math.random()*-12-3,r:Math.random()*6+4,c:cols[i%5],a:Math.random()*6,s:Math.floor(Math.random()*3)});
+  if(!raf) loop(); }
+function loop(){fctx.clearRect(0,0,fx.width,fx.height);parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=.1;fctx.save();fctx.translate(p.x,p.y);fctx.rotate(p.a);fctx.fillStyle=p.c;
+  if(p.s===0)fctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);else if(p.s===1){fctx.beginPath();fctx.arc(0,0,p.r/2,0,7);fctx.fill();}else{fctx.beginPath();fctx.moveTo(0,-p.r/2);fctx.lineTo(p.r/2,p.r/2);fctx.lineTo(-p.r/2,p.r/2);fctx.fill();}fctx.restore();});
+  parts=parts.filter(p=>p.y<fx.height+20);if(parts.length)raf=requestAnimationFrame(loop);else{raf=0;fctx.clearRect(0,0,fx.width,fx.height);}}
+
+function earn(i,msg){ if(st.stars.has(i)) return; st.stars.add(i); $("#starN").textContent=st.stars.size; beep("star"); confetti(); toast(msg||"Bir yıldız kazandın! ★"); renderNav(); }
+
+/* ---------- Letter SVG ---------- */
+function letterSVG(L,fillKey,opts={}){
+  const s=SHAPE[L],sym=SYM[st.letterSym[L]];const fill=fillKey?COLORS[fillKey].h:"#ffffff";
+  const badges=s.b.map(([x,y])=>`<g pointer-events="none"><circle cx="${x}" cy="${y}" r="15" fill="#fff" stroke="#17223b" stroke-width="2.5"/><text x="${x}" y="${y+7.5}" text-anchor="middle" font-size="22" font-family="Arial,sans-serif" fill="#17223b">${sym}</text></g>`).join("");
+  return `<svg class="letter" viewBox="0 0 200 220" role="img" aria-label="${L} harfi, ${SYMNAME[st.letterSym[L]]} işaretli${fillKey?", "+COLORS[fillKey].n+" boyalı":", boyanmamış"}" ${opts.attr||""}>
+    <path class="outl" d="${s.d}" fill="none" stroke="#17223b" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="fillp" d="${s.d}" fill="none" stroke="${fill}" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" style="transition:stroke .3s"/>
+    ${opts.noBadge?"":badges}</svg>`;
+}
+const correctColor=L=>st.code[st.letterSym[L]];
+
+/* ---------- Nav ---------- */
+function renderNav(){
+  $("#stepsNav").innerHTML=STEPS.map((s,i)=>`<button data-go="${i}" ${i===st.step?'aria-current="step"':""} class="${st.stars.has(i)?"done":""}"><span class="n">${i<6?i+1:"★"}</span>${s.t}${s.min?` <small>${s.min} dk</small>`:""}</button>`).join("");
+  $$("#stepsNav [data-go]").forEach(b=>b.onclick=()=>go(+b.dataset.go));
+  const cur=$('#stepsNav [aria-current="step"]');cur&&cur.scrollIntoView({block:"nearest",inline:"nearest"});
+}
+function go(i){st.step=i;stopTimer();renderNav();render();window.scrollTo({top:0,behavior:"smooth"});}
+function head(i,title,lead){
+  const s=STEPS[i];
+  return `<div class="shead"><div><div class="eyebrow">${i<6?`Adım ${i+1} / 6`:"Final"}${s.min?` · ${s.min} dakika`:""}</div><h2>${title}</h2>${lead?`<p class="lead">${lead}</p>`:""}</div>
+  ${s.min?`<div class="timer"><span class="t" id="tm">${s.min}:00</span><button class="btn ghost" id="tmBtn" aria-label="Süreyi başlat">Süre başlat</button></div>`:""}</div>`;
+}
+function foot(i,nextLabel){
+  return `<div class="foot"><button class="btn ghost" data-nav="${i-1}" ${i===0?"disabled":""}>← Geri</button><button class="btn yellow" data-nav="${i+1}">${nextLabel||"Sonraki adım →"}</button></div>`;
+}
+
+/* timer */
+let tmI=null,tmLeft=0;
+function stopTimer(){clearInterval(tmI);tmI=null;}
+function wireTimer(){const b=$("#tmBtn");if(!b)return;tmLeft=STEPS[st.step].min*60;
+  b.onclick=()=>{if(tmI){stopTimer();b.textContent="Devam et";return;}b.textContent="Durdur";
+    tmI=setInterval(()=>{tmLeft--;const t=$("#tm");if(!t){stopTimer();return;}t.textContent=Math.floor(tmLeft/60)+":"+String(tmLeft%60).padStart(2,"0");
+      if(tmLeft<=0){stopTimer();t.textContent="0:00";b.textContent="Süre bitti";beep("star");toast("Bu adımın süresi doldu!");}},1000);};}
+
+/* ---------- Render ---------- */
+function render(){
+  const m=$("#main");const fn=[r1,r2,r3,r4,r5,r6,r7][st.step];m.innerHTML=`<section class="sheet">${fn()}</section>`;
+  $$("[data-nav]",m).forEach(b=>b.onclick=()=>go(Math.max(0,Math.min(6,+b.dataset.nav))));
+  wireTimer();[w1,w2,w3,w4,w5,w6,w7][st.step]();
+}
+
+/* Step 1 */
+function r1(){
+  return head(0,"Bu harfler neyi anlatıyor olabilir?","Tahtadaki dört büyük harfe bak. Her kartın neyi sakladığını tahmin et, sonra kartı çevir.")+
+  `<div class="bigq">S · T · E · M … Sence bu harfler hangi kelimelerin baş harfi?</div>
+  <div class="flip">${LETTERS.map(L=>{const a=AREAS[L];const em=ITEMS.filter(x=>x.a===L).map(x=>x.e).join("");
+   return `<button class="card ${st.flipped.has(L)?"open":""}" data-L="${L}" aria-label="${L} kartını çevir"><div class="in">
+     <div class="face front">${L}<small>Çevirmek için dokun</small></div>
+     <div class="face back" style="background:${a.bg}"><div class="L">${L}</div><div class="en">${a.en}</div><div class="tr">${st.level===1?"🔊 Dinle":a.tr}</div><p>${st.level===1?"":a.d}</p><div class="em">${em}</div></div></div></button>`}).join("")}</div>
+  <div class="msg" id="m1"></div>`+foot(0);
+}
+function w1(){
+  $$(".card").forEach(c=>c.onclick=()=>{const L=c.dataset.l;c.classList.toggle("open");if(c.classList.contains("open")){st.flipped.add(L);beep("pop");speak(L+". "+AREAS[L].tr.replace("(Fen)","ya da Fen")+".");}
+    const n=st.flipped.size;$("#m1").textContent=n<4?`${n}/4 kart açıldı.`:"Harika! STEM: Bilim, Teknoloji, Mühendislik ve Matematik.";$("#m1").className="msg"+(n===4?" ok":"");
+    if(n===4)earn(0,"STEM'in sırrını çözdün! ★");});
+  if(st.flipped.size===4){$("#m1").textContent="Harika! STEM: Bilim, Teknoloji, Mühendislik ve Matematik.";$("#m1").className="msg ok";}
+}
+
+/* Step 2 */
+function itemHTML(it,tag="button"){return `<${tag} class="item" data-id="${it.id}"${tag==="button"?' type="button"':''}><span class="e" aria-hidden="true">${it.e}</span><span class="nm">${it.n}</span>${st.level===3&&st.placed[it.id]?`<span class="job">${it.job}</span>`:""}</${tag}>`;}
+function r2(){
+  const pool=ITEMS.filter(it=>!st.placed[it.id]);const n=Object.keys(st.placed).length;
+  return head(1,"Resimlerden tahmin et","Resmi tut, ait olduğu harfin kutusuna bırak. Ya da önce resme, sonra kutuya dokun.")+
+  `<div class="pool" id="pool" aria-label="Resimler">${pool.length?shuffleStable(pool).map(it=>itemHTML(it)).join(""):`<span class="done">Tüm resimler yerleşti! Her resmi kim kullanır, konuşalım.</span>`}</div>
+  <div class="baskets">${LETTERS.map(L=>{const a=AREAS[L];const got=ITEMS.filter(it=>st.placed[it.id]===L);
+   return `<div class="basket" data-L="${L}" role="button" tabindex="0" style="--bc:${a.c}" aria-label="${L} kutusu"><div class="top"><span class="lt">${L}</span><span class="area">${st.level===1?`<span class="say" data-say="${L}">🔊 Dinle</span>`:a.tr}</span><span class="cnt">${got.length}/3</span></div>
+     <div class="got">${got.map(it=>itemHTML(it,"span")).join("")}</div></div>`}).join("")}</div>
+  <div class="s2bar"><div class="msg" id="m2">${n}/12 resim yerleşti.</div><div class="progress"><i style="width:${n/12*100}%"></i></div><button class="btn ghost" id="reset2">Baştan başla</button></div>`+foot(1);
+}
+let order2=null;function shuffleStable(a){if(!order2)order2=shuffle(ITEMS.map(i=>i.id));return [...a].sort((x,y)=>order2.indexOf(x.id)-order2.indexOf(y.id));}
+const tries={};
+function place(id,L){
+  const it=ITEMS.find(x=>x.id===id);if(!it||st.placed[id]||!L)return;
+  if(it.a===L){st.placed[id]=L;beep("ok");st.sel=null;speak(it.n+(st.level===3?", "+it.job+" kullanır.":""));render();
+    const n=Object.keys(st.placed).length;
+    if(n===12) earn(1,"Bütün resimleri doğru yerleştirdin! ★"); else {$("#m2").textContent=`Doğru! ${it.n} → ${AREAS[L].tr}. ${n}/12`;$("#m2").className="msg ok";}
+  }else{beep("bad");tries[id]=(tries[id]||0)+1;
+    const el=$(`#pool [data-id="${id}"]`);if(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake");}
+    const bk=$(`.basket[data-L="${L}"]`);if(bk){bk.classList.add("no");setTimeout(()=>bk.classList.remove("no"),500);}
+    if(tries[id]>=2){const ok=$(`.basket[data-L="${it.a}"]`);if(ok){ok.classList.remove("hint");void ok.offsetWidth;ok.classList.add("hint");}
+      $("#m2").textContent=`İpucu: ${it.n} ${it.job.toLowerCase()} kullanır. Parlayan kutuya bak!`;}
+    else $("#m2").textContent=`Hmm, ${it.n} buraya ait değil. Bunu kim kullanır, bir daha düşün.`;
+    $("#m2").className="msg bad";}
+}
+function w2(){
+  const selectItem=b=>{st.sel=st.sel===b.dataset.id?null:b.dataset.id;$$("#pool .item").forEach(x=>x.setAttribute("aria-pressed",x.dataset.id===st.sel));beep("pop");
+      if(st.level===1){const it=ITEMS.find(x=>x.id===b.dataset.id);speak(it.n);}};
+  const basketAt=(x,y)=>{const el=document.elementFromPoint(x,y);return el&&el.closest(".basket");};
+  $$("#pool .item").forEach(b=>{
+    let sx=0,sy=0,ghost=null,dragging=false,pid=null,hot=null;
+    b.addEventListener("pointerdown",e=>{if(e.button>0)return;sx=e.clientX;sy=e.clientY;dragging=false;pid=e.pointerId;try{b.setPointerCapture(pid);}catch(_){}});
+    b.addEventListener("pointermove",e=>{if(pid!==e.pointerId)return;
+      if(!dragging){if(Math.hypot(e.clientX-sx,e.clientY-sy)<8)return;dragging=true;
+        const r=b.getBoundingClientRect();ghost=b.cloneNode(true);
+        Object.assign(ghost.style,{position:"fixed",left:r.left+"px",top:r.top+"px",width:r.width+"px",zIndex:40,pointerEvents:"none",margin:0,opacity:.92,transform:"rotate(-4deg) scale(1.08)",boxShadow:"0 10px 24px rgb(0 0 0 / .25)"});
+        ghost._ox=e.clientX-r.left;ghost._oy=e.clientY-r.top;document.body.appendChild(ghost);b.style.opacity=".3";}
+      ghost.style.left=(e.clientX-ghost._ox)+"px";ghost.style.top=(e.clientY-ghost._oy)+"px";
+      const k=basketAt(e.clientX,e.clientY);if(k!==hot){hot&&hot.classList.remove("hot");hot=k;hot&&hot.classList.add("hot");}});
+    const end=e=>{if(pid!==e.pointerId)return;pid=null;
+      if(!dragging){if(e.type==="pointerup")selectItem(b);return;}
+      dragging=false;ghost&&ghost.remove();ghost=null;b.style.opacity="";hot&&hot.classList.remove("hot");hot=null;
+      if(e.type==="pointerup"){const k=basketAt(e.clientX,e.clientY);if(k)place(b.dataset.id,k.dataset.l);}};
+    b.addEventListener("pointerup",end);b.addEventListener("pointercancel",end);
+    b.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectItem(b);}});
+  });
+  $$(".basket").forEach(k=>{k.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();k.click();}};k.onclick=e=>{const s=e.target.closest("[data-say]");if(s){speak(AREAS[s.dataset.say].tr.replace("(Fen)","ya da Fen"));return;}
+      if(st.sel)place(st.sel,k.dataset.l);else{$("#m2").textContent="Önce yukarıdan bir resim seç ya da sürükle.";$("#m2").className="msg";}};});
+  $("#reset2").onclick=()=>{st.placed={};order2=null;for(const k in tries)delete tries[k];render();};
+  if(Object.keys(st.placed).length===12){$("#m2").textContent="Tüm resimler doğru yerde. Her resmi kimin kullandığını konuşun!";$("#m2").className="msg ok";}
+}
+
+/* Step 3 */
+function r3(){
+  const custom=st.level===3;
+  return head(2,"Kodu tanı","Sayfanın altındaki renk kodunu birlikte okuyalım. Her işaret bir rengi söylüyor.")+
+  `<div class="legend">${Object.keys(SYM).map(k=>`<div class="lg"><span class="sym" aria-hidden="true">${SYM[k]}</span><span>=</span>
+     ${custom?`<label style="display:grid;gap:4px;min-width:0"><span class="sw" style="background:${COLORS[st.code[k]].h}"></span><select id="cs-${k}" data-k="${k}" aria-label="${SYMNAME[k]} rengi">${["siyah","mavi","yesil","kirmizi","sari","turuncu","mor","pembe"].map(c=>`<option value="${c}" ${st.code[k]===c?"selected":""}>${COLORS[c].n}</option>`).join("")}</select></label>`
+     :`<span class="sw" style="background:${COLORS[st.code[k]].h}"></span><span class="cn">${COLORS[st.code[k]].n.toUpperCase()}</span>`}</div>`).join("")}</div>
+  ${custom?`<div class="row"><b>3–4. sınıf:</b> Kendi renk kodunu oluştur, sonra arkadaşına boyat! <button class="btn ghost" id="resetCode">Kâğıttaki koda dön</button></div>`:""}
+  <div class="robot-say"><span class="r" aria-hidden="true">🤖</span><span>Bilgisayar da işaretleri böyle okuyup ne yapacağına karar verir. Ben de bir kod okuyucuyum!</span></div>
+  <div class="quiz" id="quiz"></div>`+foot(2);
+}
+function newQuiz(){st.quiz={qs:shuffle(Object.keys(SYM)),i:0,right:0,answered:false};}
+function drawQuiz(){
+  const q=st.quiz,box=$("#quiz");if(!box)return;
+  if(q.i>=q.qs.length){box.innerHTML=`<div class="q">Kodu çözdün! ${q.right}/4 ilk denemede doğru.</div><div class="row"><button class="btn ghost" id="qAgain">Tekrar oyna</button><button class="btn yellow" data-nav="3">Boyamaya geç →</button></div>`;
+    $("#qAgain").onclick=()=>{newQuiz();drawQuiz();};$('#quiz [data-nav]').onclick=()=>go(3);earn(2,"Renk kodunu öğrendin! ★");return;}
+  const k=q.qs[q.i];const used=Object.values(st.code);const opts=shuffle([...new Set([...used,"sari","mor"])]).slice(0,6);if(!opts.includes(st.code[k]))opts[0]=st.code[k];
+  box.innerHTML=`<div class="row" style="justify-content:space-between"><span class="eyebrow">Kod bilmecesi ${q.i+1}/4</span><span class="dots">${q.qs.map((_,j)=>`<i class="${j<q.i?"on":""}"></i>`).join("")}</span></div>
+   <div class="q"><span class="sym">${SYM[k]}</span> Bu işaret hangi renk demek?</div>
+   <div class="opts">${opts.map(c=>`<button class="opt" data-c="${c}"><i style="background:${COLORS[c].h}"></i>${COLORS[c].n}</button>`).join("")}</div><div class="msg" id="qm"></div>`;
+  q.answered=false;
+  $$("#quiz .opt").forEach(b=>b.onclick=()=>{if(b.classList.contains("wrong"))return;
+    if(b.dataset.c===st.code[k]){b.classList.add("right");beep("ok");if(!q.answered)q.right++;$("#qm").textContent=`Evet! ${SYM[k]} = ${COLORS[st.code[k]].n}.`;$("#qm").className="msg ok";
+      $$("#quiz .opt").forEach(x=>x.disabled=true);setTimeout(()=>{q.i++;drawQuiz();},900);}
+    else{b.classList.add("wrong");beep("bad");q.answered=true;$("#qm").textContent="Olmadı. Yukarıdaki renk koduna tekrar bak.";$("#qm").className="msg bad";}});
+}
+function w3(){
+  if(!st.quiz)newQuiz();drawQuiz();
+  $$("select[data-k]").forEach(s=>s.onchange=()=>{const k=s.dataset.k,v=s.value,other=Object.keys(st.code).find(x=>x!==k&&st.code[x]===v);if(other)st.code[other]=st.code[k];st.code[k]=v;st.fills={S:null,T:null,E:null,M:null};newQuiz();render();toast("Yeni kod kaydedildi. Boyama sayfası sıfırlandı.");});
+  const r=$("#resetCode");if(r)r.onclick=()=>{st.code={...DEFAULT_CODE};st.fills={S:null,T:null,E:null,M:null};newQuiz();render();};
+}
+
+/* Step 4 */
+function codebar(){return `<div class="codebar"><b>RENK KODU</b>${Object.keys(SYM).map(k=>`<span class="ce"><span aria-hidden="true">${SYM[k]}</span>= ${COLORS[st.code[k]].n.toUpperCase()}</span>`).join("")}</div>`;}
+function r4(){
+  const done=LETTERS.filter(L=>st.fills[L]).length;
+  return head(3,"Kodu çöz ve boya","1. Harfin içindeki işareti bul.  2. Renk koduna bak, harfi o renge boya.  3. Resimleri istediğin renklere boya.")+
+  `<div class="paper"><div class="ptitle">STEM'i Boya!</div>
+   <div class="panels">${LETTERS.map(L=>{const its=ITEMS.filter(x=>x.a===L);return `<div class="panel">
+     <div id="L-${L}" data-L="${L}" tabindex="0" role="button" aria-label="${L} harfini seçili renge boya">${letterSVG(L,st.fills[L])}</div>
+     <div class="icons">${its.map(it=>`<button class="ic" data-ic="${it.id}" style="background:${st.iconFills[it.id]?COLORS[st.iconFills[it.id]].h:"#fff"}" aria-label="${it.n} resmini boya" title="${it.n}${st.level===3?" · "+it.job:""}">${it.e}</button>`).join("")}</div>
+     <div class="lbl">${st.level===1?`<span class="say" data-say="${L}">🔊 ${L} alanını dinle</span>`:AREAS[L].tr}${st.level===3?`<small>${its.map(i=>i.job).join(" · ")}</small>`:""}</div></div>`}).join("")}</div>
+   ${codebar()}</div>
+  <div class="palette" role="toolbar" aria-label="Boya kalemleri">${Object.keys(COLORS).map(c=>`<button class="pc" data-c="${c}" style="background:${COLORS[c].h}" aria-pressed="${st.brush===c}" aria-label="${COLORS[c].n}" title="${COLORS[c].n}"></button>`).join("")}
+   <button class="pc eraser" data-c="" aria-pressed="${st.brush===""}" aria-label="Silgi" title="Silgi"></button>
+   <span class="cur" id="cur">Kalem: ${st.brush?COLORS[st.brush].n:"Silgi"}</span></div>
+  <div class="row"><span style="font-weight:800">${done}/4 harf boyandı</span><div class="progress"><i style="width:${done*25}%"></i></div>
+   <button class="btn ghost" id="shuf">Yeni bulmaca (işaretleri karıştır)</button><button class="btn ghost" id="clr4">Sayfayı temizle</button></div>`+foot(3,"Kontrol etmeye geç →");
+}
+function w4(){
+  $$(".palette .pc").forEach(b=>b.onclick=()=>{st.brush=b.dataset.c;$$(".palette .pc").forEach(x=>x.setAttribute("aria-pressed",x===b));$("#cur").textContent="Kalem: "+(st.brush?COLORS[st.brush].n:"Silgi");beep("pop");});
+  $$("[id^=L-]").forEach(el=>{const paint=()=>{const L=el.dataset.l;st.fills[L]=st.brush||null;beep("pop");render();};el.onclick=paint;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();paint();}};});
+  $$(".ic").forEach(b=>b.onclick=()=>{st.iconFills[b.dataset.ic]=st.brush||null;b.style.background=st.brush?COLORS[st.brush].h:"#fff";beep("pop");});
+  $$("[data-say]").forEach(b=>b.onclick=()=>speak(AREAS[b.dataset.say].tr.replace("(Fen)","ya da Fen")));
+  $("#shuf").onclick=()=>{const k=Object.keys(SYM);let p;do{p=shuffle(k);}while(p.every((x,i)=>x===st.letterSym[LETTERS[i]]));LETTERS.forEach((L,i)=>st.letterSym[L]=p[i]);st.fills={S:null,T:null,E:null,M:null};st.robi=null;render();toast("İşaretler karıştı! Kodu yeniden çöz.");};
+  $("#clr4").onclick=()=>{st.fills={S:null,T:null,E:null,M:null};st.iconFills={};render();};
+}
+
+/* Step 5 */
+function newRobi(){const wrongN=Math.random()<.5?1:2;const bad=shuffle(LETTERS).slice(0,wrongN);const f={};
+  LETTERS.forEach(L=>{const c=correctColor(L);if(bad.includes(L)){const others=Object.values(st.code).filter(x=>x!==c);f[L]=others[Math.floor(Math.random()*others.length)];}else f[L]=c;});
+  st.robi={f,bad,found:[]};}
+function r5(){
+  const res=LETTERS.map(L=>({L,f:st.fills[L],c:correctColor(L)}));
+  return head(4,"Kontrol et: Hata nerede oldu?","Sayfanı kodla karşılaştır. Yanlış boyanan yeri bulmaya programcılar hata ayıklama (debugging) der.")+
+  `<div class="two">
+   <div class="box"><h3>Benim sayfam</h3>
+    <div class="mini">${res.map(r=>`<div class="${r.f? (r.f===r.c?"good":"badl"):""}">${letterSVG(r.L,r.f)}<span>${r.f?(r.f===r.c?"✓ Doğru":"✗ Hatalı"):"Boyanmadı"}</span></div>`).join("")}</div>
+    <ul class="report">${res.map(r=>{const s=st.letterSym[r.L];
+      if(!r.f)return `<li class="bad">${r.L} harfi henüz boyanmadı. İçinde ${SYM[s]} var, yani ${COLORS[r.c].n.toLowerCase()} olmalı.</li>`;
+      if(r.f===r.c)return `<li class="ok">${r.L}: ${SYM[s]} = ${COLORS[r.c].n}. Doğru!</li>`;
+      return `<li class="bad">${r.L} harfinde ${SYM[s]} var. Kod ${COLORS[r.c].n.toLowerCase()} diyor, sen ${COLORS[r.f].n.toLowerCase()} boyamışsın.</li>`;}).join("")}</ul>
+    <div class="row"><button class="btn ghost" data-nav="3">← Boyamaya dön ve düzelt</button></div></div>
+   <div class="box"><h3>🤖 Robi'nin sayfası</h3><p style="margin:0">Robi kodu okurken bazı yerleri karıştırdı. Hatalı harfi bul ve üstüne dokun!</p>
+    <div class="mini" id="robi"></div><div class="msg" id="m5"></div>
+    <div class="row"><button class="btn ghost" id="robiNew">Robi yeni sayfa boyasın</button></div></div>
+  </div>
+  <div class="box" style="background:var(--accent-soft);border-color:var(--accent)"><b>Sıra arkadaşınla:</b> Sayfalarınızı değiştirin. Arkadaşının her harfindeki işareti koda göre kontrol et. Yanlış renk varsa birlikte "Hata nerede oldu?" diye sorun.</div>`+foot(4);
+}
+function drawRobi(){
+  if(!st.robi)newRobi();const R=st.robi;
+  $("#robi").innerHTML=LETTERS.map(L=>{const fixed=R.found.includes(L);return `<button data-L="${L}" class="${fixed?"found":""}" aria-label="Robi'nin ${L} harfi">${letterSVG(L,fixed?correctColor(L):R.f[L])}<span>${fixed?"✓ Düzeldi":L}</span></button>`;}).join("");
+  $$("#robi button").forEach(b=>b.onclick=()=>{const L=b.dataset.l;if(R.found.includes(L))return;
+    if(R.bad.includes(L)){const wrong=R.f[L];R.found.push(L);beep("ok");drawRobi();
+      const left=R.bad.length-R.found.length;$("#m5").textContent=`Buldun! ${L} harfinde ${SYM[st.letterSym[L]]} var, ${COLORS[correctColor(L)].n.toLowerCase()} olmalıydı, Robi ${COLORS[wrong].n.toLowerCase()} boyamış.`+(left?` ${left} hata daha var!`:" Tüm hatalar düzeldi!");$("#m5").className="msg ok";
+      if(!left)earn(4,"Usta bir hata avcısısın! ★");}
+    else{beep("bad");b.classList.remove("badl");void b.offsetWidth;b.classList.add("badl");$("#m5").textContent=`${L} harfi doğru boyanmış. Kodu tekrar oku: ${SYM[st.letterSym[L]]} = ${COLORS[correctColor(L)].n}.`;$("#m5").className="msg bad";}});
+}
+function w5(){
+  drawRobi();$("#robiNew").onclick=()=>{newRobi();drawRobi();$("#m5").textContent="";};
+  if(LETTERS.every(L=>st.fills[L]===correctColor(L)))earn(3,"Sayfanı kodla doğru boyadın! ★");
+}
+
+/* Step 6 */
+let dTool="pen",dColor="mavi",dSize=8,dStamp="⚙️",cvSaved=null;
+function r6(){
+  return head(5,"Kendi keşfin","Ben de bir STEM keşfi yapsaydım… Hayalindeki keşfi çiz, adını koy ve hangi STEM alanlarını kullandığını işaretle.")+
+  `<div class="draw">
+   <div class="cvwrap"><span class="cap">Ben de bir STEM keşfi yapsaydım…</span><canvas id="cv" width="900" height="560" aria-label="Çizim alanı"></canvas></div>
+   <div class="tools">
+    <div><h4>Araç</h4><div class="tgrid"><button class="tb" data-t="pen" aria-pressed="${dTool==="pen"}">Kalem</button><button class="tb" data-t="erase" aria-pressed="${dTool==="erase"}">Silgi</button><button class="tb" data-t="stamp" aria-pressed="${dTool==="stamp"}">Damga</button></div></div>
+    <div><h4>Renk</h4><div class="tgrid">${Object.keys(COLORS).map(c=>`<button class="pc sm" data-dc="${c}" style="background:${COLORS[c].h}" aria-pressed="${dColor===c}" aria-label="${COLORS[c].n}"></button>`).join("")}</div></div>
+    <div><h4>Kalınlık</h4><div class="tgrid">${[4,8,16,28].map(s=>`<button class="tb" data-s="${s}" aria-pressed="${dSize===s}"><span style="display:inline-block;width:${Math.max(6,s/1.4)}px;height:${Math.max(6,s/1.4)}px;border-radius:50%;background:currentColor;vertical-align:middle"></span></button>`).join("")}</div></div>
+    <div><h4>STEM damgaları</h4><div class="tgrid">${["⚙️","🤖","💻","🔍","🧪","🌱","🌉","📏","🔷","🧮","💡","🔋"].map(e=>`<button class="tb stamp" data-st="${e}" aria-pressed="${dTool==="stamp"&&dStamp===e}">${e}</button>`).join("")}</div></div>
+    <div class="row"><button class="btn ghost" id="undo">Geri al</button><button class="btn ghost" id="clr">Temizle</button></div>
+   </div></div>
+  <div class="two">
+   <div class="box"><label for="inv" style="font-weight:800">Keşfinin adı</label><input type="text" id="inv" maxlength="40" placeholder="Örn. Işığa dönen bitkiler">
+     <label for="who" style="font-weight:800">Adın ve sınıfın</label><input type="text" id="who" maxlength="30" placeholder="Örn. Elif, 2-B"></div>
+   <div class="box"><span style="font-weight:800">Keşfin hangi alanlarla ilgili?</span>
+     <div class="areas">${LETTERS.map(L=>`<label><input type="checkbox" id="ar-${L}" value="${L}">${L} · ${AREAS[L].tr}</label>`).join("")}</div>
+     <button class="btn yellow" id="pinIt">Sınıf panosuna as</button><div class="msg" id="m6"></div></div>
+  </div>`+foot(5,"Sınıf panosuna git →");
+}
+function w6(){
+  const cv=$("#cv"),c=cv.getContext("2d");const hist=[];
+  function blank(){c.fillStyle="#ffffff";c.fillRect(0,0,cv.width,cv.height);c.strokeStyle="#e3e9f3";c.lineWidth=1;for(let x=30;x<cv.width;x+=30){c.beginPath();c.moveTo(x,0);c.lineTo(x,cv.height);c.stroke();}for(let y=30;y<cv.height;y+=30){c.beginPath();c.moveTo(0,y);c.lineTo(cv.width,y);c.stroke();}}
+  if(cvSaved){const im=new Image();im.onload=()=>c.drawImage(im,0,0);im.src=cvSaved;}else blank();
+  const snap=()=>{hist.push(c.getImageData(0,0,cv.width,cv.height));if(hist.length>25)hist.shift();};
+  const pt=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height};};
+  let down=false,last=null;
+  cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);snap();const p=pt(e);
+    if(dTool==="stamp"){c.font=`${dSize*5+30}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;c.textAlign="center";c.textBaseline="middle";c.fillText(dStamp,p.x,p.y);beep("pop");save();return;}
+    down=true;last=p;c.beginPath();c.arc(p.x,p.y,(dTool==="erase"?dSize*2:dSize)/2,0,7);c.fillStyle=dTool==="erase"?"#fff":COLORS[dColor].h;c.fill();};
+  cv.onpointermove=e=>{if(!down)return;const p=pt(e);c.strokeStyle=dTool==="erase"?"#fff":COLORS[dColor].h;c.lineWidth=dTool==="erase"?dSize*2:dSize;c.lineCap="round";c.lineJoin="round";c.beginPath();c.moveTo(last.x,last.y);c.lineTo(p.x,p.y);c.stroke();last=p;};
+  cv.onpointerup=cv.onpointercancel=()=>{if(down){down=false;save();}};
+  function save(){try{cvSaved=cv.toDataURL("image/png");}catch(e){}}
+  const setTool=t=>{dTool=t;$$("[data-t]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===t));$$("[data-st]").forEach(b=>b.setAttribute("aria-pressed",t==="stamp"&&b.dataset.st===dStamp));};
+  $$("[data-t]").forEach(b=>b.onclick=()=>setTool(b.dataset.t));
+  $$("[data-dc]").forEach(b=>b.onclick=()=>{dColor=b.dataset.dc;if(dTool!=="pen")setTool("pen");$$("[data-dc]").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+  $$("[data-s]").forEach(b=>b.onclick=()=>{dSize=+b.dataset.s;$$("[data-s]").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+  $$("[data-st]").forEach(b=>b.onclick=()=>{dStamp=b.dataset.st;setTool("stamp");});
+  $("#undo").onclick=()=>{const h=hist.pop();if(h){c.putImageData(h,0,0);save();}};
+  $("#clr").onclick=()=>{snap();blank();cvSaved=null;};
+  $("#pinIt").onclick=()=>{
+    const name=$("#inv").value.trim(),who=$("#who").value.trim(),areas=LETTERS.filter(L=>$("#ar-"+L).checked);
+    if(!name){$("#m6").textContent="Keşfine bir ad ver.";$("#m6").className="msg bad";$("#inv").focus();return;}
+    if(!areas.length){$("#m6").textContent="En az bir STEM alanı seç.";$("#m6").className="msg bad";return;}
+    const t=document.createElement("canvas");t.width=450;t.height=280;t.getContext("2d").drawImage(cv,0,0,450,280);let img="";try{img=t.toDataURL("image/jpeg",.75);}catch(e){}
+    const g=LS.get("stem.pano",[]);g.unshift({name,who,areas,img,ts:Date.now()});while(g.length>16)g.pop();
+    const ok=LS.set("stem.pano",g);if(!ok)memPano=g;
+    $("#m6").textContent="Panoya asıldı! Sınıf panosunda görebilirsin.";$("#m6").className="msg ok";earn(5,"Keşfin panoda! ★");};
+}
+let memPano=null;
+
+/* Step 7 */
+function r7(){
+  const g=memPano||LS.get("stem.pano",[]);const names=["STEM meraklısı","Resim dedektifi","Kod okuyucu","Usta boyacı","Hata avcısı","Genç kâşif"];
+  return head(6,`Sınıf panosu`,`${st.stars.size}/6 yıldız topladın. Boyanmış sayfaları ve keşif çizimlerini panoda sergileyin; bu bilgisayarda asılan keşifler burada durur.`)+
+  `<div class="badges">${names.map((n,i)=>`<div class="badge ${st.stars.has(i)?"on":""}"><span class="st" aria-hidden="true">★</span><span>${n}<br><small style="color:var(--muted)">${STEPS[i].t}</small></span></div>`).join("")}</div>
+  <div class="gallery">${g.length?g.map((p,i)=>`<figure class="pin" style="--r:${((i*37)%7-3)*0.8}deg;margin:0">${p.img?`<img src="${p.img}" alt="${esc(p.name)} çizimi">`:""}<b>${esc(p.name)}</b><small>${esc(p.who||"İsimsiz kâşif")} · ${p.areas.join(" ")}</small><button class="x" data-del="${i}" aria-label="${esc(p.name)} çizimini kaldır">×</button></figure>`).join("")
+   :`<div class="empty">Panoda henüz keşif yok. 6. adımda keşfini çiz ve "Sınıf panosuna as" düğmesine bas.</div>`}</div>
+  <div class="row"><button class="btn ghost" data-nav="5">← Keşif çizmeye dön</button><div class="spacer"></div><button class="btn" id="newKid">Sıradaki öğrenci için baştan başla</button></div>`;
+}
+function w7(){
+  $$("[data-del]").forEach(b=>b.onclick=()=>{const g=memPano||LS.get("stem.pano",[]);g.splice(+b.dataset.del,1);if(!LS.set("stem.pano",g))memPano=g;render();});
+  $("#newKid").onclick=()=>{Object.assign(st,{stars:new Set(),fills:{S:null,T:null,E:null,M:null},iconFills:{},flipped:new Set(),placed:{},sel:null,quiz:null,robi:null,letterSym:{S:"star",T:"circle",E:"tri",M:"sq"}});
+    cvSaved=null;order2=null;$("#starN").textContent=0;go(0);toast("Yeni öğrenci için hazır!");};
+}
+
+/* ---------- Header wiring ---------- */
+function setLevel(l){st.level=l;LS.set("stem.level",l);$$(".seg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.lv===l));
+  if(l!==3)st.code={...DEFAULT_CODE};render();}
+$$(".seg button").forEach(b=>b.onclick=()=>{setLevel(+b.dataset.lv);toast(b.textContent+" sınıf düzeyi seçildi");});
+$("#soundBtn").onclick=e=>{st.sound=!st.sound;e.currentTarget.setAttribute("aria-pressed",st.sound);e.currentTarget.textContent="Ses: "+(st.sound?"açık":"kapalı");};
+$("#teachBtn").onclick=()=>{$("#teach").hidden=false;$("#teachClose").focus();};
+$("#teachClose").onclick=()=>{$("#teach").hidden=true;};
+$("#teach").onclick=e=>{if(e.target.id==="teach")$("#teach").hidden=true;};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#teach").hidden=true;});
+addEventListener("resize",()=>{fx.width=innerWidth;fx.height=innerHeight;});
+
+$$(".seg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.lv===st.level));
+renderNav();render();
+})();
+</script>
+
+</body></html>
